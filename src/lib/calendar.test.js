@@ -6,6 +6,7 @@ import {
   daysInMonth,
   getMonthGrid,
   normalizeTime,
+  toTimeInputValue,
 } from './calendar.js';
 
 test('February 2026 is four weeks starting on Sunday', () => {
@@ -55,6 +56,7 @@ test('default weekday has one 6:00 AM mass', () => {
   assert.equal(day.noMass, false);
   assert.equal(day.masses.length, 1);
   assert.equal(day.masses[0].time, '6:00 AM');
+  assert.deepEqual(day.masses[0].roleKeys, ['C', 'L1', 'RP', 'PF']);
 });
 
 test('first Saturday has special and regular masses', () => {
@@ -93,4 +95,12 @@ test('time normalization accepts common input forms', () => {
   assert.equal(normalizeTime('12:00 PM'), '12:00 PM');
   assert.equal(normalizeTime('0:05'), '12:05 AM');
   assert.equal(normalizeTime('not a time'), null);
+});
+
+test('time picker values round-trip 12-hour schedule times', () => {
+  assert.equal(toTimeInputValue('6:00 AM'), '06:00');
+  assert.equal(toTimeInputValue('12:15 AM'), '00:15');
+  assert.equal(toTimeInputValue('12:30 PM'), '12:30');
+  assert.equal(toTimeInputValue('6:30 PM'), '18:30');
+  assert.equal(toTimeInputValue('invalid'), '');
 });

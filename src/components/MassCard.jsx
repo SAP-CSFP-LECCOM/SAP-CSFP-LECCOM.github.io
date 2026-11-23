@@ -3,8 +3,9 @@ import {
   ROLE_LABELS,
   getMassRoleKeys,
   newId,
+  reorderRoleKeys,
 } from '../lib/defaults.js';
-import { formatTime, normalizeTime } from '../lib/calendar.js';
+import { formatTime, normalizeTime, toTimeInputValue } from '../lib/calendar.js';
 import { formatMemberName, normalizeMemberName } from '../lib/roster.js';
 
 export default function MassCard({
@@ -57,20 +58,25 @@ export default function MassCard({
   };
 
   const addRole = (key) => {
-    onPatch({
-      roleKeys: ROLE_KEYS.filter(
-        (roleKey) => roleKeys.includes(roleKey) || roleKey === key,
-      ),
-    });
+    onPatch({ roleKeys: [...roleKeys, key] });
+  };
+
+  const reorderRole = (draggedKey, targetKey) => {
+    const reordered = reorderRoleKeys(roleKeys, draggedKey, targetKey);
+    if (reordered !== roleKeys) onPatch({ roleKeys: reordered });
+  };
+
+  const moveRoleBy = (key, offset) => {
+    const from = roleKeys.indexOf(key);
+    const to = from + offset;
+    if (from < 0 || to < 0 || to >= roleKeys.length) return;
+    const reordered = [...roleKeys];
+    reordered.splice(to, 0, reordered.splice(from, 1)[0]);
+    onPatch({ roleKeys: reordered });
   };
 
   const removeExtraRow = (id) => {
     onPatch({ extraRows: mass.extraRows.filter((row) => row.id !== id) });
-  };
-
-  const commitTime = () => {
-    const normalized = normalizeTime(mass.time);
-    if (normalized && normalized !== mass.time) onPatch({ time: normalized });
   };
 
   const timeLabel = formatTime(mass.time, mass.language);
@@ -80,21 +86,29 @@ export default function MassCard({
       <div className="mass-head">
         <input
           className="mass-time"
-          value={mass.time}
-          onChange={(event) => onPatch({ time: event.target.value })}
-          onBlur={commitTime}
+          type="time"
+          value={toTimeInputValue(mass.time)}
+          onChange={(event) =>
+            onPatch({ time: normalizeTime(event.target.value) ?? event.target.value })
+          }
           aria-label={`Mass time, ${dayLabel}`}
         />
         <span className="mass-language">(</span>
-        <input
-          className="mass-language-input"
-          value={mass.language}
-          maxLength={1}
-          onChange={(event) =>
-            onPatch({ language: event.target.value.toUpperCase().slice(0, 1) })
-          }
-          aria-label={`Language, ${dayLabel}, ${mass.time}`}
-        />
+        <label className="mass-language-picker">
+          <span className="mass-language-code">{mass.language}</span>
+          <select
+            className="mass-language-select screen-only"
+            value={mass.language}
+            onChange={(event) => onPatch({ language: event.target.value })}
+            aria-label={`Language for ${dayLabel}, ${mass.time}`}
+          >
+            <option value="E">English</option>
+            <option value="K">Kapampangan</option>
+            {mass.language !== 'E' && mass.language !== 'K' && (
+              <option value={mass.language}>{mass.language} (saved)</option>
+            )}
+          </select>
+        </label>
         <span className="mass-language">)</span>
         <label className="special-toggle screen-only">
           <input
@@ -125,7 +139,37 @@ export default function MassCard({
       )}
 
       {roleKeys.map((key) => (
-        <div className="role-line" key={key}>
+        <div
+          className="role-line"
+          key={key}
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={(event) => {
+            event.preventDefault();
+            reorderRole(event.dataTransfer.getData('text/plain'), key);
+          }}
+        >
+          <button
+            type="button"
+            className="role-drag-handle screen-only"
+            draggable
+            onDragStart={(event) => {
+              event.dataTransfer.setData('text/plain', key);
+              event.dataTransfer.effectAllowed = 'move';
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                moveRoleBy(key, -1);
+              } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                moveRoleBy(key, 1);
+              }
+            }}
+            aria-label={`Reorder ${ROLE_LABELS[key]}`}
+            title="Drag to reorder; use arrow keys when focused"
+          >
+            ⋮⋮
+          </button>
           <span className="role-label">{key}-</span>
           <input
             className="role-name"

@@ -62,6 +62,17 @@ export const PARISH = {
 
 export const ROLE_KEYS = ['C', 'L1', 'RP', 'L2', 'PF'];
 
+export function reorderRoleKeys(keys, draggedKey, targetKey) {
+  const sourceIndex = keys.indexOf(draggedKey);
+  const targetIndex = keys.indexOf(targetKey);
+  if (sourceIndex < 0 || targetIndex < 0 || draggedKey === targetKey) return keys;
+
+  const reordered = [...keys];
+  const [dragged] = reordered.splice(sourceIndex, 1);
+  reordered.splice(targetIndex, 0, dragged);
+  return reordered;
+}
+
 export const ROLE_LABELS = {
   C: 'Commentator',
   L1: 'Lector 1',
@@ -72,7 +83,7 @@ export const ROLE_LABELS = {
 
 export function getMassRoleKeys(mass) {
   const keys = Array.isArray(mass?.roleKeys) ? mass.roleKeys : ROLE_KEYS;
-  return ROLE_KEYS.filter((key) => keys.includes(key));
+  return [...new Set(keys.filter((key) => ROLE_KEYS.includes(key)))];
 }
 
 export const MONTH_NAMES = [
@@ -113,7 +124,11 @@ export const SUNDAY_MASSES = [
   { time: '6:30 PM', language: 'E' },
 ];
 
-export const WEEKDAY_MASS = { time: '6:00 AM', language: 'K' };
+export const WEEKDAY_MASS = {
+  time: '6:00 AM',
+  language: 'K',
+  roleKeys: ['C', 'L1', 'RP', 'PF'],
+};
 export const SATURDAY_REGULAR = { time: '6:00 PM', language: 'E' };
 export const SATURDAY_SPECIAL = { time: '6:00 AM', language: 'K' };
 

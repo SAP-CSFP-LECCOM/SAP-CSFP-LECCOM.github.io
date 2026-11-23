@@ -1,7 +1,6 @@
 import {
   MONTH_NAMES,
   MONTH_SHORT,
-  ROLE_KEYS,
   getMassRoleKeys,
 } from './defaults.js';
 import { formatTime, getMonthGrid } from './calendar.js';
@@ -135,8 +134,13 @@ export function buildWorkbook(
 
   const announcement = monthData.announcement ?? {};
   const birthRows = (monthData.birthdays ?? []).filter((entry) => entry.date || entry.name);
-  const birthdayText = birthRows.map((entry) => `${entry.date}  ${entry.name}`.trim()).join('\n');
-  const birthdayLineCount = Math.max(1, birthdayText ? birthdayText.split('\n').length : 1);
+  const birthdayColumns = [birthRows.slice(0, 4), birthRows.slice(4)];
+  const birthdayText = birthdayColumns.map((column) =>
+    column
+      .map((entry) => `${entry.date}  ${formatMemberName(entry.name, memberGenders)}`.trim())
+      .join('\n'),
+  );
+  const birthdayLineCount = Math.max(1, ...birthdayColumns.map((column) => column.length));
   const birthdayHeight = Math.max(14.25, Math.min(34, (birthdayLineCount * 11) / 2 + 2));
   worksheet.getRow(5).height = birthdayHeight;
   worksheet.getRow(6).height = birthdayHeight;
@@ -171,7 +175,11 @@ export function buildWorkbook(
     font: FONT_LABEL,
     alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
   });
-  mergeCell(worksheet, 5, 8, 6, 12, birthdayText, {
+  mergeCell(worksheet, 5, 8, 6, 10, birthdayText[0], {
+    font: FONT_BODY,
+    alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
+  });
+  mergeCell(worksheet, 5, 11, 6, 12, birthdayText[1], {
     font: FONT_BODY,
     alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
   });
@@ -256,14 +264,13 @@ export function buildWorkbook(
       });
 
       const flatMasses = blockMasses.flat();
-      const weekRoleKeys = ROLE_KEYS.filter((key) =>
-        flatMasses.some((mass) => getMassRoleKeys(mass).includes(key)),
+      const roleCount = Math.max(
+        1,
+        ...flatMasses.map(
+          (mass) =>
+            getMassRoleKeys(mass).length + (mass.extraRows?.length ?? 0),
+        ),
       );
-      const extraCount = Math.max(
-        0,
-        ...flatMasses.map((mass) => mass.extraRows?.length ?? 0),
-      );
-      const roleCount = Math.max(1, weekRoleKeys.length + extraCount);
 
       const timeRow = row;
       for (let index = 0; index < 7; index += 1) {
@@ -344,14 +351,13 @@ export function buildWorkbook(
               const column = spec.start + lane;
               let value = '';
               if (mass) {
-                if (roleIndex < weekRoleKeys.length) {
-                  const key = weekRoleKeys[roleIndex];
-                  if (getMassRoleKeys(mass).includes(key)) {
-                    value = roleValue(key, mass.roles?.[key], memberGenders);
-                  }
+                const roleKeys = getMassRoleKeys(mass);
+                if (roleIndex < roleKeys.length) {
+                  const key = roleKeys[roleIndex];
+                  value = roleValue(key, mass.roles?.[key], memberGenders);
                 } else {
                   value = extraValue(
-                    mass.extraRows?.[roleIndex - weekRoleKeys.length],
+                    mass.extraRows?.[roleIndex - roleKeys.length],
                     memberGenders,
                   );
                 }
@@ -366,14 +372,13 @@ export function buildWorkbook(
             const mass = blockMasses[index][0];
             let value = '';
             if (mass) {
-              if (roleIndex < weekRoleKeys.length) {
-                const key = weekRoleKeys[roleIndex];
-                if (getMassRoleKeys(mass).includes(key)) {
-                  value = roleValue(key, mass.roles?.[key], memberGenders);
-                }
+              const roleKeys = getMassRoleKeys(mass);
+              if (roleIndex < roleKeys.length) {
+                const key = roleKeys[roleIndex];
+                value = roleValue(key, mass.roles?.[key], memberGenders);
               } else {
                 value = extraValue(
-                  mass.extraRows?.[roleIndex - weekRoleKeys.length],
+                  mass.extraRows?.[roleIndex - roleKeys.length],
                   memberGenders,
                 );
               }

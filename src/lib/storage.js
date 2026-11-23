@@ -8,7 +8,7 @@ import {
 import { normalizeMemberGenders, normalizeRoster } from './roster.js';
 
 export const STORAGE_KEY = 'leccom.schedule.v1';
-export const VERSION = 1;
+export const VERSION = 2;
 
 function normalizeHeader(raw) {
   const source = raw && typeof raw === 'object' ? raw : {};
@@ -19,10 +19,19 @@ function normalizeHeader(raw) {
   return header;
 }
 
-function normalizeMass(raw) {
+function normalizeMass(raw, removeDefaultWeekdayL2 = false) {
   const roles = {};
   for (const key of ROLE_KEYS) {
     roles[key] = String(raw?.roles?.[key] ?? '');
+  }
+  const roleKeys = getMassRoleKeys(raw);
+  if (
+    removeDefaultWeekdayL2 &&
+    !roles.L2.trim() &&
+    roleKeys.length === ROLE_KEYS.length &&
+    ROLE_KEYS.every((key, index) => roleKeys[index] === key)
+  ) {
+    roleKeys.splice(roleKeys.indexOf('L2'), 1);
   }
   return {
     id: String(raw?.id ?? newId('mass')),
@@ -31,7 +40,7 @@ function normalizeMass(raw) {
     special: Boolean(raw?.special),
     label: String(raw?.label ?? ''),
     roles,
-    roleKeys: getMassRoleKeys(raw),
+    roleKeys,
     extraRows: Array.isArray(raw?.extraRows)
       ? raw.extraRows.map((row) => ({
           id: String(row?.id ?? newId('row')),
@@ -42,18 +51,18 @@ function normalizeMass(raw) {
   };
 }
 
-function normalizeDay(raw, fallback) {
+function normalizeDay(raw, fallback, removeDefaultWeekdayL2 = false) {
   if (!raw || typeof raw !== 'object') return fallback;
   return {
     iso: fallback.iso,
     noMass: Boolean(raw.noMass),
     masses: Array.isArray(raw.masses)
-      ? raw.masses.map(normalizeMass)
+      ? raw.masses.map((mass) => normalizeMass(mass, removeDefaultWeekdayL2))
       : fallback.masses,
   };
 }
 
-function normalizeMonth(raw, year, month) {
+function normalizeMonth(raw, year, month, migrateLegacyWeekdayRoles) {
   const fallback = createDefaultMonth(year, month);
   if (!raw || typeof raw !== 'object') return fallback;
 
@@ -61,7 +70,12 @@ function normalizeMonth(raw, year, month) {
   const total = daysInMonth(year, month);
   for (let day = 1; day <= total; day += 1) {
     const iso = isoDate(year, month, day);
-    days[iso] = normalizeDay(raw.days?.[iso], fallback.days[iso]);
+    const weekday = new Date(year, month - 1, day).getDay();
+    days[iso] = normalizeDay(
+      raw.days?.[iso],
+      fallback.days[iso],
+      migrateLegacyWeekdayRoles && weekday >= 1 && weekday <= 5,
+    );
   }
 
   const source = raw.announcement && typeof raw.announcement === 'object'
@@ -113,6 +127,7 @@ export function normalizeRoot(raw) {
   }
 
   const months = {};
+  const migrateLegacyWeekdayRoles = Number(raw?.version ?? 1) < VERSION;
   if (raw?.months && typeof raw.months === 'object') {
     for (const [key, value] of Object.entries(raw.months)) {
       const match = key.match(/^(\d{4})-(\d{2})$/);
@@ -121,7 +136,12 @@ export function normalizeRoot(raw) {
       const entryMonth = Number(match[2]);
       if (entryYear < 1900 || entryYear > 2100) continue;
       if (entryMonth < 1 || entryMonth > 12) continue;
-      months[key] = normalizeMonth(value, entryYear, entryMonth);
+      months[key] = normalizeMonth(
+        value,
+        entryYear,
+        entryMonth,
+        migrateLegacyWeekdayRoles,
+      );
     }
   }
 

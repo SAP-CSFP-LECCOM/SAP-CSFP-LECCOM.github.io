@@ -341,6 +341,10 @@ export default function App() {
                 announcement={monthData.announcement}
                 birthdays={monthData.birthdays}
                 monthShort={monthShort(month)}
+                year={year}
+                month={month}
+                roster={root.roster}
+                memberGenders={root.memberGenders}
                 onChangeAnnouncement={updateAnnouncement}
                 onChangeBirthdays={updateBirthdays}
               />

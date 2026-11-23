@@ -153,6 +153,16 @@ export function formatTime(time, language) {
   return lang ? `${value} (${lang})` : value;
 }
 
+export function toTimeInputValue(time) {
+  const normalized = normalizeTime(String(time ?? ''));
+  if (!normalized) return '';
+  const [clock, meridiem] = normalized.split(' ');
+  let [hour, minutes] = clock.split(':').map(Number);
+  if (meridiem === 'AM' && hour === 12) hour = 0;
+  if (meridiem === 'PM' && hour !== 12) hour += 12;
+  return `${String(hour).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
 export function feastDayNumber(text) {
   const match = String(text ?? '').match(/(\d{1,2})/);
   return match ? Number(match[1]) : 99;
