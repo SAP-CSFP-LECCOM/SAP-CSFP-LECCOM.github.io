@@ -40,6 +40,23 @@ test('saved mass role order survives loading', () => {
   );
 });
 
+test('individual mass no-mass state survives loading', () => {
+  const root = normalizeRoot({
+    lastMonth: { year: 2026, month: 12 },
+    roster: [],
+    months: {
+      '2026-12': {
+        days: {
+          '2026-12-06': {
+            masses: [{ noMass: true }],
+          },
+        },
+      },
+    },
+  });
+  assert.equal(root.months['2026-12'].days['2026-12-06'].masses[0].noMass, true);
+});
+
 test('legacy weekday defaults drop only an empty L2 role', () => {
   const root = normalizeRoot({
     version: 1,

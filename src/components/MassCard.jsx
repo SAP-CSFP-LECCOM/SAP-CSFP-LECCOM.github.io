@@ -10,6 +10,7 @@ import { formatMemberName, normalizeMemberName } from '../lib/roster.js';
 
 export default function MassCard({
   mass,
+  allowNoMass = false,
   dayLabel,
   memberGenders = {},
   rosterId,
@@ -81,6 +82,23 @@ export default function MassCard({
 
   const timeLabel = formatTime(mass.time, mass.language);
 
+  if (mass.noMass) {
+    return (
+      <article className="mass-card mass-no-mass">
+        <button
+          type="button"
+          className="no-mass mass-card-no-mass"
+          onClick={() => onPatch({ noMass: false })}
+          title="Restore this mass"
+          aria-label={`Restore ${dayLabel}, ${timeLabel}`}
+        >
+          <span>NO MASS</span>
+          <span className="no-mass-hint screen-only">click to restore</span>
+        </button>
+      </article>
+    );
+  }
+
   return (
     <article className={`mass-card ${mass.special ? 'mass-special' : ''}`}>
       <div className="mass-head">
@@ -119,6 +137,17 @@ export default function MassCard({
           />
           Special
         </label>
+        {allowNoMass && (
+          <button
+            type="button"
+            className="tiny mass-no-mass-toggle screen-only"
+            onClick={() => onPatch({ noMass: true })}
+            title="Set this mass to NO MASS"
+            aria-label={`Set ${dayLabel}, ${timeLabel} to no mass`}
+          >
+            ⊘
+          </button>
+        )}
         <button
           type="button"
           className="remove-row screen-only"

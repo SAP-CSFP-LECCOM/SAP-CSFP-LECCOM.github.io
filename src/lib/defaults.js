@@ -165,6 +165,7 @@ export function makeMass({
     language,
     special,
     label,
+    noMass: false,
     roles: { C: '', L1: '', RP: '', L2: '', PF: '', ...roles },
     roleKeys: [...roleKeys],
     extraRows,

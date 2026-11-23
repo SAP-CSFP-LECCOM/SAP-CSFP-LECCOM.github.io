@@ -613,6 +613,25 @@ textarea:focus-visible {
   font-size: 9px;
 }
 
+.day-cell.weekday-0.has-masses::after {
+  position: absolute;
+  top: 20px;
+  right: 2px;
+  bottom: 1px;
+  left: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(20% - 0.5px),
+    #000 calc(20% - 0.5px),
+    #000 calc(20% + 0.5px),
+    transparent calc(20% + 0.5px),
+    transparent 20%
+  );
+  content: '';
+  pointer-events: none;
+}
+
 .day-top {
   position: relative;
   display: flex;
@@ -781,14 +800,31 @@ textarea:focus-visible {
   padding: 1px 2px;
 }
 
-.masses-sunday .mass-card,
+.masses-sunday .mass-card {
+  border-left: 0;
+}
+
 .masses-saturday .mass-card {
   border-left: 1px solid #000;
 }
 
-.masses-sunday .mass-card:nth-child(5n + 1),
 .masses-saturday .mass-card:nth-child(2n + 1) {
   border-left: 0;
+}
+
+.masses-sunday.has-extra-row .mass-card:nth-child(-n + 5) {
+  border-bottom: 1px solid #000;
+}
+
+.mass-card-no-mass {
+  height: 100%;
+}
+
+.mass-no-mass-toggle {
+  min-width: 14px;
+  min-height: 14px;
+  padding: 0 2px;
+  font-size: 8px;
 }
 
 .masses-saturday .mass-card:only-child {

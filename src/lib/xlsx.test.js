@@ -78,6 +78,24 @@ test('workbook uses member honorifics and each mass role order', async () => {
   assert.equal(worksheet.getCell('A19').value, 'C- BRO JULIAN');
 });
 
+test('individual Sunday no-mass slot exports without assignments', async () => {
+  const monthData = createDefaultMonth(2026, 12);
+  monthData.days['2026-12-06'].masses[3].noMass = true;
+  const workbook = buildWorkbook(ExcelJS, {
+    year: 2026,
+    month: 12,
+    monthData,
+    header: PARISH,
+  });
+  const buffer = await workbook.xlsx.writeBuffer();
+  const reloaded = new ExcelJS.Workbook();
+  await reloaded.xlsx.load(buffer);
+  const worksheet = reloaded.worksheets[0];
+
+  assert.equal(worksheet.getCell('D17').value, 'NO MASS');
+  assert.equal(worksheet.getCell('D17').fill.fgColor.argb, 'FFFFFF00');
+});
+
 test('workbook splits birthday entries into two columns', async () => {
   const monthData = createDefaultMonth(2026, 12);
   monthData.birthdays = Array.from({ length: 6 }, (_, index) => ({

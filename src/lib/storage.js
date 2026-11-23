@@ -39,6 +39,7 @@ function normalizeMass(raw, removeDefaultWeekdayL2 = false) {
     language: typeof raw?.language === 'string' ? raw.language : 'E',
     special: Boolean(raw?.special),
     label: String(raw?.label ?? ''),
+    noMass: Boolean(raw?.noMass),
     roles,
     roleKeys,
     extraRows: Array.isArray(raw?.extraRows)

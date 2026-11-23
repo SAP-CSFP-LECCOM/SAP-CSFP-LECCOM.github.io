@@ -291,6 +291,14 @@ export function buildWorkbook(
           for (let lane = 0; lane < spec.lanes; lane += 1) {
             const mass = blockMasses[index][lane];
             const column = spec.start + lane;
+            if (mass?.noMass) {
+              mergeCell(worksheet, timeRow, column, timeRow + roleCount - 1, column, 'NO MASS', {
+                font: { ...FONT_BODY, bold: true },
+                alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+                fill: FILL_NO_MASS,
+              });
+              continue;
+            }
             for (let offset = 0; offset < roleCount; offset += 1) {
               applyStyle(worksheet, timeRow + 1 + offset, column, timeRow + 1 + offset, column, {
                 fill: mass?.special ? FILL_SPECIAL : undefined,
@@ -316,6 +324,22 @@ export function buildWorkbook(
           }
         } else {
           const mass = blockMasses[index][0];
+          if (mass?.noMass) {
+            mergeCell(
+              worksheet,
+              timeRow,
+              spec.start,
+              timeRow + roleCount - 1,
+              spec.end,
+              'NO MASS',
+              {
+                font: { ...FONT_BODY, bold: true },
+                alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+                fill: FILL_NO_MASS,
+              },
+            );
+            continue;
+          }
           for (let offset = 0; offset < roleCount; offset += 1) {
             applyStyle(worksheet, timeRow + 1 + offset, spec.start, timeRow + 1 + offset, spec.end, {
               fill: mass?.special ? FILL_SPECIAL : undefined,
@@ -349,6 +373,7 @@ export function buildWorkbook(
             for (let lane = 0; lane < spec.lanes; lane += 1) {
               const mass = blockMasses[index][lane];
               const column = spec.start + lane;
+              if (mass?.noMass) continue;
               let value = '';
               if (mass) {
                 const roleKeys = getMassRoleKeys(mass);
