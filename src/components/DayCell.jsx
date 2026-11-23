@@ -69,7 +69,7 @@ export default function DayCell({
   return (
     <td
       className={`day-cell weekday-${date.weekday} ${isNoMass ? 'day-no-mass' : ''} ${
-        date.weekday === 0 && !isNoMass ? 'has-masses' : ''
+        (date.weekday === 0 || date.weekday === 6) && !isNoMass ? 'has-masses' : ''
       }`}
     >
       <div className="day-top">
@@ -120,11 +120,7 @@ export default function DayCell({
           <span className="no-mass-hint screen-only">click to restore</span>
         </button>
       ) : (
-        <div
-          className={`masses ${layoutClass} ${
-            date.weekday === 0 && day.masses.length > 5 ? 'has-extra-row' : ''
-          }`}
-        >
+        <div className={`masses ${layoutClass}`}>
           {day.masses.map((mass) => (
             <MassCard
               key={mass.id}

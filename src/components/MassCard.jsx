@@ -102,33 +102,35 @@ export default function MassCard({
   return (
     <article className={`mass-card ${mass.special ? 'mass-special' : ''}`}>
       <div className="mass-head">
-        <input
-          className="mass-time screen-only"
-          type="time"
-          value={toTimeInputValue(mass.time)}
-          onChange={(event) =>
-            onPatch({ time: normalizeTime(event.target.value) ?? event.target.value })
-          }
-          aria-label={`Mass time, ${dayLabel}`}
-        />
-        <span className="mass-time print-only">{mass.time}</span>
-        <span className="mass-language">(</span>
-        <label className="mass-language-picker">
-          <span className="mass-language-code">{mass.language}</span>
-          <select
-            className="mass-language-select screen-only"
-            value={mass.language}
-            onChange={(event) => onPatch({ language: event.target.value })}
-            aria-label={`Language for ${dayLabel}, ${mass.time}`}
-          >
-            <option value="E">English</option>
-            <option value="K">Kapampangan</option>
-            {mass.language !== 'E' && mass.language !== 'K' && (
-              <option value={mass.language}>{mass.language} (saved)</option>
-            )}
-          </select>
-        </label>
-        <span className="mass-language">)</span>
+        <div className="mass-time-language">
+          <input
+            className="mass-time screen-only"
+            type="time"
+            value={toTimeInputValue(mass.time)}
+            onChange={(event) =>
+              onPatch({ time: normalizeTime(event.target.value) ?? event.target.value })
+            }
+            aria-label={`Mass time, ${dayLabel}`}
+          />
+          <span className="mass-time print-only">{mass.time}</span>
+          <span className="mass-language">(</span>
+          <label className="mass-language-picker">
+            <span className="mass-language-code">{mass.language}</span>
+            <select
+              className="mass-language-select screen-only"
+              value={mass.language}
+              onChange={(event) => onPatch({ language: event.target.value })}
+              aria-label={`Language for ${dayLabel}, ${mass.time}`}
+            >
+              <option value="E">English</option>
+              <option value="K">Kapampangan</option>
+              {mass.language !== 'E' && mass.language !== 'K' && (
+                <option value={mass.language}>{mass.language} (saved)</option>
+              )}
+            </select>
+          </label>
+          <span className="mass-language">)</span>
+        </div>
         <label className="special-toggle screen-only">
           <input
             type="checkbox"

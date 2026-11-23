@@ -63,6 +63,16 @@ export function getMonthGrid(year, month) {
   return weeks;
 }
 
+export function weekHasExtraMassRow(week, days) {
+  return week.some((date) => {
+    if (!date) return false;
+    const day = days[date.iso];
+    if (!day || day.noMass || !Array.isArray(day.masses)) return false;
+    const columns = date.weekday === 0 ? 5 : date.weekday === 6 ? 2 : 1;
+    return day.masses.length > columns;
+  });
+}
+
 export function createDefaultDay(year, month, day) {
   const weekday = getWeekday(year, month, day);
   const iso = isoDate(year, month, day);

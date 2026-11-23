@@ -10,14 +10,17 @@ const THIN = { style: 'thin', color: { argb: 'FF000000' } };
 const BORDER = { top: THIN, left: THIN, bottom: THIN, right: THIN };
 const FILL_SPECIAL = 'FFFEEDC6';
 const FILL_NO_MASS = 'FFFFFF00';
-const FILL_REMINDER = 'FFFFF1CC';
 
 const FONT_TITLE = { name: 'Times New Roman', size: 12 };
 const FONT_HEADING = { name: 'Verdana', size: 9, bold: true };
 const FONT_LABEL = { name: 'Verdana', size: 8, bold: true };
 const FONT_BODY = { name: 'Tahoma', size: 8 };
+const FONT_ROLE = { name: 'Tahoma', size: 10 };
+const FONT_ANNOUNCEMENT = { name: 'Tahoma', size: 9.5 };
+const FONT_ANNOUNCEMENT_BOLD = { ...FONT_ANNOUNCEMENT, bold: true };
+const FONT_FEAST = { name: 'Tahoma', size: 9.5 };
 const FONT_DATE = { name: 'Tahoma', size: 9, bold: true };
-const FONT_TIME = { name: 'Verdana', size: 9, bold: true, italic: true };
+const FONT_TIME = { name: 'Tahoma', size: 10, bold: true, italic: true };
 
 const DAY_COLUMNS = [
   { start: 1, end: 5, lanes: 5 },
@@ -119,15 +122,21 @@ export function buildWorkbook(
   worksheet.getRow(7).height = 26.25;
 
   const titleLines = [
-    header.archdiocese,
-    header.ministry,
-    header.guild,
-    header.parish,
-    header.address,
-    `${MONTH_NAMES[month - 1]} ${year} SCHEDULE`,
-  ].filter((line) => line !== undefined && line !== null).join('\n');
+    { text: header.archdiocese, font: FONT_TITLE },
+    { text: header.ministry, font: FONT_TITLE },
+    { text: header.guild, font: { ...FONT_TITLE, name: 'Old English Text MT' } },
+    { text: header.parish, font: FONT_TITLE },
+    { text: header.address, font: FONT_TITLE },
+    { text: `${MONTH_NAMES[month - 1]} ${year} SCHEDULE`, font: FONT_TITLE },
+  ].filter(({ text }) => text !== undefined && text !== null);
+  const title = {
+    richText: titleLines.map(({ text, font }, index) => ({
+      text: `${text}${index < titleLines.length - 1 ? '\n' : ''}`,
+      font,
+    })),
+  };
 
-  mergeCell(worksheet, 1, 1, 7, 7, titleLines, {
+  mergeCell(worksheet, 1, 1, 7, 7, title, {
     font: FONT_TITLE,
     alignment: { horizontal: 'center', vertical: 'top', wrapText: true },
   });
@@ -152,11 +161,11 @@ export function buildWorkbook(
   worksheet.getRow(7).height = Math.max(26.25, Math.min(90, reminderLines * 11 + 8));
 
   mergeCell(worksheet, 1, 8, 1, 12, 'ANNOUNCEMENT', {
-    font: FONT_HEADING,
+    font: FONT_ANNOUNCEMENT_BOLD,
     alignment: { horizontal: 'center', vertical: 'top', wrapText: true },
   });
   mergeCell(worksheet, 2, 8, 2, 12, `LECCOM MONTHLY MEETING: ${announcement.meetingDate ?? ''}`, {
-    font: FONT_LABEL,
+    font: FONT_ANNOUNCEMENT_BOLD,
     alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
   });
   mergeCell(
@@ -167,26 +176,26 @@ export function buildWorkbook(
     12,
     `MASS: ${announcement.massTime ?? ''}        MEETING: ${announcement.meetingTime ?? ''}`,
     {
-      font: FONT_LABEL,
+      font: FONT_ANNOUNCEMENT_BOLD,
       alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
     },
   );
   mergeCell(worksheet, 4, 8, 4, 12, 'BIRTHDAY CELEBRANT(S):', {
-    font: FONT_LABEL,
+    font: FONT_ANNOUNCEMENT_BOLD,
     alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
   });
   mergeCell(worksheet, 5, 8, 6, 10, birthdayText[0], {
-    font: FONT_BODY,
+    font: FONT_ANNOUNCEMENT,
     alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
   });
   mergeCell(worksheet, 5, 11, 6, 12, birthdayText[1], {
-    font: FONT_BODY,
+    font: FONT_ANNOUNCEMENT,
     alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
   });
   mergeCell(worksheet, 7, 8, 7, 12, reminder, {
-    font: { ...FONT_BODY, bold: true },
+    font: FONT_ANNOUNCEMENT_BOLD,
     alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
-    fill: FILL_REMINDER,
+    fill: FILL_SPECIAL,
   });
   applyStyle(worksheet, 1, 8, 7, 12);
 
@@ -293,7 +302,7 @@ export function buildWorkbook(
             const column = spec.start + lane;
             if (mass?.noMass) {
               mergeCell(worksheet, timeRow, column, timeRow + roleCount - 1, column, 'NO MASS', {
-                font: { ...FONT_BODY, bold: true },
+                font: { ...FONT_ROLE, bold: true },
                 alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
                 fill: FILL_NO_MASS,
               });
@@ -333,7 +342,7 @@ export function buildWorkbook(
               spec.end,
               'NO MASS',
               {
-                font: { ...FONT_BODY, bold: true },
+                font: { ...FONT_ROLE, bold: true },
                 alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
                 fill: FILL_NO_MASS,
               },
@@ -388,7 +397,7 @@ export function buildWorkbook(
                 }
               }
               mergeCell(worksheet, roleRow, column, roleRow, column, value, {
-                font: FONT_BODY,
+                font: FONT_ROLE,
                 alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
                 fill: mass?.special ? FILL_SPECIAL : undefined,
               });
@@ -409,7 +418,7 @@ export function buildWorkbook(
               }
             }
             mergeCell(worksheet, roleRow, spec.start, roleRow, spec.end, value, {
-              font: FONT_BODY,
+              font: FONT_ROLE,
               alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
               fill: mass?.special ? FILL_SPECIAL : undefined,
             });
@@ -423,7 +432,7 @@ export function buildWorkbook(
   }
 
   mergeCell(worksheet, row, 1, row, 12, 'FEAST DAYS / SPECIAL CELEBRATIONS', {
-    font: FONT_HEADING,
+    font: { ...FONT_FEAST, bold: true },
     alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
   });
   worksheet.getRow(row).height = 16;
@@ -437,11 +446,11 @@ export function buildWorkbook(
   } else {
     for (const feast of feastDays) {
       mergeCell(worksheet, row, 1, row, 3, feast.date, {
-        font: FONT_BODY,
+        font: FONT_FEAST,
         alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
       });
       mergeCell(worksheet, row, 4, row, 12, feast.title, {
-        font: FONT_BODY,
+        font: FONT_FEAST,
         alignment: { horizontal: 'left', vertical: 'top', wrapText: true },
       });
       worksheet.getRow(row).height = 12;
@@ -477,6 +486,7 @@ export function buildWorkbook(
     fitToWidth: 1,
     fitToHeight: 1,
     horizontalCentered: true,
+    verticalCentered: true,
     margins: { left: 0.2, right: 0.2, top: 0.2, bottom: 0.2, header: 0, footer: 0 },
     printArea: `A1:L${row}`,
   };

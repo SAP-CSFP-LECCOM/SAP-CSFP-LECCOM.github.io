@@ -3,8 +3,10 @@ import assert from 'node:assert/strict';
 import {
   addMassToDay,
   createDefaultDay,
+  createDefaultMonth,
   daysInMonth,
   getMonthGrid,
+  weekHasExtraMassRow,
   normalizeTime,
   toTimeInputValue,
 } from './calendar.js';
@@ -30,6 +32,27 @@ test('August 2026 needs six weeks', () => {
   const weeks = getMonthGrid(2026, 8);
   assert.equal(weeks.length, 6);
   assert.equal(weeks[0][6].day, 1);
+});
+
+test('calendar week detects additional mass-card rows across days', () => {
+  const month = createDefaultMonth(2026, 12);
+  const weeks = getMonthGrid(2026, 12);
+
+  assert.equal(weekHasExtraMassRow(weeks[1], month.days), false);
+
+  month.days['2026-12-08'].masses.push({ id: 'extra-weekday' });
+  assert.equal(weekHasExtraMassRow(weeks[1], month.days), true);
+
+  month.days['2026-12-08'].masses.pop();
+  month.days['2026-12-06'].masses.push({ id: 'extra-sunday' });
+  assert.equal(weekHasExtraMassRow(weeks[1], month.days), true);
+
+  month.days['2026-12-06'].masses.pop();
+  month.days['2026-12-12'].masses.push(
+    { id: 'extra-saturday-1' },
+    { id: 'extra-saturday-2' },
+  );
+  assert.equal(weekHasExtraMassRow(weeks[1], month.days), true);
 });
 
 test('leap year February 2028 has 29 days', () => {

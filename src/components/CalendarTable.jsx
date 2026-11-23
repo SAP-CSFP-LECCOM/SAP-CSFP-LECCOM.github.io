@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
 import { DAY_NAMES } from '../lib/defaults.js';
-import { getMonthGrid, monthName, weekdayName } from '../lib/calendar.js';
+import {
+  getMonthGrid,
+  monthName,
+  weekdayName,
+  weekHasExtraMassRow,
+} from '../lib/calendar.js';
 import DayCell from './DayCell.jsx';
 
 export default function CalendarTable({
@@ -26,7 +31,10 @@ export default function CalendarTable({
       </thead>
       <tbody>
         {weeks.map((week, weekIndex) => (
-          <tr key={week.map((date) => date?.iso ?? 'blank').join('-') || weekIndex}>
+          <tr
+            key={week.map((date) => date?.iso ?? 'blank').join('-') || weekIndex}
+            className={weekHasExtraMassRow(week, monthData.days) ? 'week-has-extra-mass-row' : ''}
+          >
             {week.map((date, dayIndex) => {
               if (!date) {
                 return <td key={`blank-${weekIndex}-${dayIndex}`} className="blank-cell" />;
