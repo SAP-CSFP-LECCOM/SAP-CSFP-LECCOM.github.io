@@ -1,0 +1,213 @@
+LECTORS AND COMMENTATORS MONTHLY MASS SCHEDULE
+UNIFIED ASCII WIREFRAME + IMPLEMENTATION SPECIFICATION
+Based on the provided November 2026 schedule image
+
+================================================================================
+1. OVERALL PAGE STRUCTURE
+================================================================================
+
++---------------------------------------------------------------+--------------------------------------------------------------+
+|             THE ROMAN CATHOLIC ARCHDIOCESE OF SAN FERNANDO    |                        ANNOUNCEMENT                         |
+|                   ARCHDIOCESAN LITURGICAL COMMISSION          |--------------------------------------------------------------|
+|                                                               | LECCOM MONTHLY MEETING: [DATE]                              |
+| [PARISH LOGO]   Lectors and Commentators Guild        [LOGO]  | MASS: [TIME]       MEETING: [TIME]                          |
+|                                                               | BIRTHDAY CELEBRANT(S):                                      |
+|                    SAN AGUSTIN PARISH                         | [DATE] [NAME]          [DATE] [NAME]                        |
+|             SAN AGUSTIN, CITY OF SAN FERNANDO, PAMPANGA       | [DATE] [NAME]          [DATE] [NAME]                        |
+|                                                               |--------------------------------------------------------------|
+|                    [MONTH] SCHEDULE                           | [MONTHLY REMINDER / ATTIRE / ANNOUNCEMENT]                  |
+|                         [YEAR]                                |                                                              |
++---------------------------------------------------------------+--------------------------------------------------------------+
+
++------------------------------+------------+------------+------------+------------+------------+-------------------------+
+|            SUNDAY            |   MONDAY   |  TUESDAY   | WEDNESDAY  |  THURSDAY  |   FRIDAY   |        SATURDAY         |
++------------------------------+------------+------------+------------+------------+------------+-------------------------+
+|                              |            |            |            |            |            |                         |
+|            WEEK 1            |            |            |            |            |            |                         |
+|                              |            |            |            |            |            |                         |
++------------------------------+------------+------------+------------+------------+------------+-------------------------+
+|                              |            |            |            |            |            |                         |
+|            WEEK 2            |            |            |            |            |            |                         |
+|                              |            |            |            |            |            |                         |
++------------------------------+------------+------------+------------+------------+------------+-------------------------+
+|                              |            |            |            |            |            |                         |
+|            WEEK 3            |            |            |            |            |            |                         |
+|                              |            |            |            |            |            |                         |
++------------------------------+------------+------------+------------+------------+------------+-------------------------+
+|                              |            |            |            |            |            |                         |
+|            WEEK 4            |            |            |            |            |            |                         |
+|                              |            |            |            |            |            |                         |
++------------------------------+------------+------------+------------+------------+------------+-------------------------+
+|                              |            |            |            |            |            |                         |
+|            WEEK 5            |            |            |            |            |            |                         |
+|                              |            |            |            |            |            |                         |
++------------------------------+------------+------------+------------+------------+------------+-------------------------+
+|                              |            |            |            |            |            |                         |
+|            WEEK 6            |            |            |            |            |            |                         |
+|                              |            |            |            |            |            |                         |
++------------------------------+------------+------------+------------+------------+------------+-------------------------+
+| PREPARED BY: [NAME]           | REVIEWED BY: [NAME]                                                                    |
++-------------------------------+----------------------------------------------------------------------------------------+
+
+================================================================================
+2. SUNDAY CELL STRUCTURE — FIVE MASS SLOTS
+================================================================================
+
++----------------------------------------------- SUNDAY -----------------------------------------------+
+| [DAY OF MONTH]                                                                                      |
++----------------+----------------+----------------+----------------+----------------+
+| 6:30AM (K)     | 8:00AM (E)     | 10:00AM (E)    | 5:00PM (E)     | 6:30PM (E)     |
+| C- [NAME]      | C- [NAME]      | C- [NAME]      | C- [NAME]      | C- [NAME]      |
+| L1- [NAME]     | L1- [NAME]     | L1- [NAME]     | L1- [NAME]     | L1- [NAME]     |
+| RP- [NAME]     | RP- [NAME]     | RP- [NAME]     | RP- [NAME]     | RP- [NAME]     |
+| L2- [NAME]     | L2- [NAME]     | L2- [NAME]     | L2- [NAME]     | L2- [NAME]     |
+| PF- [NAME]     | PF- [NAME]     | PF- [NAME]     | PF- [NAME]     | PF- [NAME]     |
++----------------+----------------+----------------+----------------+----------------+
+
+================================================================================
+3. WEEKDAY CELL STRUCTURE — TUESDAY THROUGH FRIDAY
+================================================================================
+
++-----------------------------+
+|         [WEEKDAY]           |
+|         [DATE]              |
++-----------------------------+
+| 6:00AM (K)                  |
+| C- [NAME]                   |
+| L1- [NAME]                  |
+| RP- [NAME]                  |
+| PF- [NAME]                  |
++-----------------------------+
+
+================================================================================
+4. MONDAY CELL STRUCTURE
+================================================================================
+
++-----------------------------+
+|           MONDAY            |
+|           [DATE]            |
++-----------------------------+
+|                             |
+|          NO MASS            |
+|                             |
++-----------------------------+
+
+Monday is normally NO MASS, but the schedule must allow a user to assign a mass
+manually when an occasional Monday mass is held.
+
+================================================================================
+5. SATURDAY CELL STRUCTURE — SPECIAL MASS + REGULAR MASS
+================================================================================
+
++-------------------------------- SATURDAY --------------------------------+
+| [DATE]                                                                  |
++--------------------------------+----------------------------------------+
+|       SPECIAL MASS SECTION     |       REGULAR SATURDAY MASS             |
+|                                |                                        |
+|          6:00AM (K)             |             6:00PM (E)                  |
+| C- [NAME]                      | C- [NAME]                              |
+| L1- [NAME]                     | L1- [NAME]                             |
+| RP- [NAME]                     | RP- [NAME]                             |
+| L2- [NAME]                     | L2- [NAME]                             |
+| PF- [NAME]                     | PF- [NAME]                             |
++--------------------------------+----------------------------------------+
+
+Saturday 6:00AM (K) is a special mass, usually scheduled only on the first
+Saturday of the month. Saturday 6:00PM (E) is the regular Saturday mass.
+
+================================================================================
+6. FEAST DAYS / LITURGICAL CELEBRATIONS SECTION
+================================================================================
+
++--------------------------------------------------------------------------------------------------+
+|                            FEAST DAYS / SPECIAL CELEBRATIONS                                     |
+|                                                                                                  |
+| [DATE] - [FEAST DAY OR LITURGICAL CELEBRATION]                                                   |
+| [DATE] - [FEAST DAY OR LITURGICAL CELEBRATION]                                                   |
+|                                                                                                  |
++--------------------------------------------------------------------------------------------------+
+
+This section must be populated dynamically for the selected month and year.
+Do not hardcode November's feast days or event descriptions.
+
+================================================================================
+7. DATE ALIGNMENT EXAMPLE — CALENDAR ROWS
+================================================================================
+
+The first date must appear under its actual weekday. Calendar layout may need
+4, 5, or 6 rows depending on month/year.
+
+Example structure:
+
+WEEK 1
++----------------------+----------+----------+----------+----------+----------+----------------------+
+| SUNDAY               | MONDAY   | TUESDAY  | WEDNESDAY| THURSDAY | FRIDAY   | SATURDAY             |
++----------------------+----------+----------+----------+----------+----------+----------------------+
+| [DATE OR BLANK]      | [DATE]   | [DATE]   | [DATE]   | [DATE]   | [DATE]   | [DATE]               |
+| [MASS ASSIGNMENTS]   | [MASS]   | [MASS]   | [MASS]   | [MASS]   | [MASS]   | [SPECIAL] [6PM]      |
++----------------------+----------+----------+----------+----------+----------+----------------------+
+
+Repeat rows for weeks 2–6 only when required. Do not shift dates into the
+wrong weekday column. Keep leading/trailing dates blank where outside the month.
+
+================================================================================
+8. IMPLEMENTATION REQUIREMENTS FOR CODING AI
+================================================================================
+
+OBJECTIVE
+Create a monthly Catholic Church Lectors and Commentators Mass schedule that
+replicates the supplied Excel schedule and can be generated for any month/year.
+
+PAGE / PRINT LAYOUT
+- Landscape orientation.
+- Fit the complete schedule to one printed page where feasible.
+- Use thin black borders and compact, readable typography.
+- Preserve the formal Excel-like appearance.
+- Use merged cells for the header, announcement area, and liturgical footer
+  where appropriate.
+- Header includes parish/church logos, archdiocese, parish, guild, month/year.
+- Announcement area is at the top-right.
+- Footer includes Prepared By and Reviewed By.
+
+CALENDAR
+- Seven columns: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday.
+- Dynamically calculate weekday alignment for day 1 of selected month.
+- Support 4, 5, or 6 calendar rows.
+- Do not hardcode any month-specific date positions.
+- Keep out-of-month cells blank.
+- Render date number at the top of each date cell.
+- Sunday: five mass assignments:
+    6:30AM (K), 8:00AM (E), 10:00AM (E), 5:00PM (E), 6:30PM (E)
+- Monday: default NO MASS, but allow manual mass configuration.
+- Tuesday-Friday: one 6:00AM (K) mass each day.
+- Saturday: separate 6:00AM (K) special-mass area and 6:00PM (E) regular-mass area.
+- Saturday 6:00AM special mass is usually first Saturday only.
+
+MASS ASSIGNMENT ROLE LABELS
+- C  = Commentator
+- L1 = Lector 1
+- RP = Reader of Prayer
+- L2 = Lector 2
+- PF = Prayer of the Faithful
+
+ANNOUNCEMENTS
+- Monthly meeting date
+- Mass time and meeting time
+- Birthday celebrants
+- Monthly reminders / dress code
+- Special announcements
+
+LITURGICAL DATA
+- Feast days
+- Liturgical celebrations
+- Special church events
+- Event date and description
+- Populate based on selected month and year; do not hardcode sample events.
+
+FOOTER
+- Prepared By
+- Reviewed By
+
+IMPORTANT
+This is a schedule layout, not a generic month calendar. Sunday and Saturday have
+multiple mass areas. Preserve their separate assignments and formatting.

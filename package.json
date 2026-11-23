@@ -1,0 +1,22 @@
+{
+  "name": "leccom-schedule-builder",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build:exe": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-exe.ps1",
+    "test": "node --test src/lib"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.2.1",
+    "vite": "^8.3.6"
+  }
+}
