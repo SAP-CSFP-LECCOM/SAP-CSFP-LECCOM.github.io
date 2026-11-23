@@ -372,8 +372,8 @@ textarea:focus-visible {
 }
 
 .sheet {
-  width: 1122px;
-  min-width: 1122px;
+  width: 1280px;
+  min-width: 1280px;
   background: #fff;
   border: 1px solid #94a3b8;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
@@ -429,6 +429,7 @@ textarea:focus-visible {
   color: #000;
   font-family: 'Times New Roman', serif;
   font-size: 11px;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -441,24 +442,9 @@ textarea:focus-visible {
   font-weight: 700;
 }
 
-.header-ministry {
-  font-size: 10px;
-}
-
-.header-guild {
-  font-size: 11px;
-  font-weight: 600;
-}
-
 .header-parish {
   margin-top: 5px;
-  font-size: 12px;
-  font-weight: 700;
   letter-spacing: 0.04em;
-}
-
-.header-address {
-  font-size: 9px;
 }
 
 .header-month {
@@ -562,6 +548,10 @@ textarea:focus-visible {
   flex: 1;
   width: 1px;
   font-size: 8px;
+}
+
+.print-only {
+  display: none;
 }
 
 .announcement-reminder {
@@ -1304,6 +1294,10 @@ textarea:focus-visible {
     display: none !important;
   }
 
+  .print-only {
+    display: inline-block;
+  }
+
   .app,
   .workspace {
     display: block;
@@ -1375,6 +1369,7 @@ textarea:focus-visible {
     min-height: 16px;
     padding: 1px 2px;
     background: var(--cream) !important;
+    resize: none;
   }
 
   .calendar th {

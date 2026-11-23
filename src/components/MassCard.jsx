@@ -85,7 +85,7 @@ export default function MassCard({
     <article className={`mass-card ${mass.special ? 'mass-special' : ''}`}>
       <div className="mass-head">
         <input
-          className="mass-time"
+          className="mass-time screen-only"
           type="time"
           value={toTimeInputValue(mass.time)}
           onChange={(event) =>
@@ -93,6 +93,7 @@ export default function MassCard({
           }
           aria-label={`Mass time, ${dayLabel}`}
         />
+        <span className="mass-time print-only">{mass.time}</span>
         <span className="mass-language">(</span>
         <label className="mass-language-picker">
           <span className="mass-language-code">{mass.language}</span>

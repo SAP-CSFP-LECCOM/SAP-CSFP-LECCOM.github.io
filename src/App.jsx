@@ -125,13 +125,19 @@ export default function App() {
       const sheet = sheetRef.current;
       if (!sheet) return;
       sheet.style.zoom = '1';
+      sheet.style.width = '1122px';
+      sheet.style.minWidth = '1122px';
       const rect = sheet.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       const scale = Math.min(1, PAGE_WIDTH_PX / rect.width, PAGE_HEIGHT_PX / rect.height);
       sheet.style.zoom = String(Math.max(0.5, scale));
     };
     const afterPrint = () => {
-      if (sheetRef.current) sheetRef.current.style.zoom = '';
+      if (sheetRef.current) {
+        sheetRef.current.style.zoom = '';
+        sheetRef.current.style.width = '';
+        sheetRef.current.style.minWidth = '';
+      }
     };
     window.addEventListener('beforeprint', beforePrint);
     window.addEventListener('afterprint', afterPrint);

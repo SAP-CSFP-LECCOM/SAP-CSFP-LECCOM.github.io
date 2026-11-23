@@ -75,7 +75,7 @@ export default function AnnouncementPanel({
               return (
                 <div className="birthday-row" key={entry.id}>
                   <select
-                    className="birthday-date"
+                    className="birthday-date screen-only"
                     value={day}
                     onChange={(event) =>
                       updateBirthday(
@@ -100,8 +100,11 @@ export default function AnnouncementPanel({
                       ),
                     )}
                   </select>
+                  <span className="birthday-date print-only">
+                    {day ? `${monthShort} ${day}` : ''}
+                  </span>
                   <select
-                    className="birthday-name"
+                    className="birthday-name screen-only"
                     value={birthdayName}
                     onChange={(event) =>
                       updateBirthday(
@@ -125,6 +128,7 @@ export default function AnnouncementPanel({
                       );
                     })}
                   </select>
+                  <span className="birthday-name print-only">{birthdayName}</span>
                   <button
                     type="button"
                     className="remove-row screen-only"
