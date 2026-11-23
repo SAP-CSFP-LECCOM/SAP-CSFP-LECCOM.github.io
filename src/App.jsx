@@ -11,6 +11,7 @@ import { createDefaultMonth, monthKey, monthShort } from './lib/calendar.js';
 import { createDefaultRoot, parseRoot, serializeRoot } from './lib/storage.js';
 import { loadPersistedRoot, savePersistedRoot } from './lib/serverStorage.js';
 import { downloadXlsx } from './lib/xlsx.js';
+import { formatMemberName } from './lib/roster.js';
 
 const PAGE_WIDTH_PX = 1069;
 const PAGE_HEIGHT_PX = 741;
@@ -230,11 +231,12 @@ export default function App() {
     setMessage('Month reset to defaults.');
   };
 
-  const handleRosterSave = (roster) => {
+  const handleRosterSave = (roster, memberGenders) => {
     const allowed = new Set(roster);
     setRoot((previous) => ({
       ...previous,
       roster,
+      memberGenders,
       disabledRoster: previous.disabledRoster.filter((name) => allowed.has(name)),
     }));
     setMessage('Roster updated.');
@@ -291,6 +293,7 @@ export default function App() {
         month,
         monthData,
         header: root.header,
+        memberGenders: root.memberGenders,
         logos: { left, right },
       });
       setMessage('Excel file exported.');
@@ -347,6 +350,7 @@ export default function App() {
               year={year}
               month={month}
               monthData={monthData}
+              memberGenders={root.memberGenders}
               onChangeDay={updateDay}
               rosterId="roster"
             />
@@ -379,13 +383,14 @@ export default function App() {
         {root.roster
           .filter((name) => !(root.disabledRoster ?? []).includes(name))
           .map((name) => (
-            <option key={name} value={name} />
+            <option key={name} value={formatMemberName(name, root.memberGenders)} />
           ))}
       </datalist>
 
       <RosterDialog
         open={rosterOpen}
         roster={root.roster}
+        memberGenders={root.memberGenders}
         onClose={() => setRosterOpen(false)}
         onSave={handleRosterSave}
       />

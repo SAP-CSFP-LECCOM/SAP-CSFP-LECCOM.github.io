@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  addMassToDay,
   createDefaultDay,
   daysInMonth,
   getMonthGrid,
@@ -68,6 +69,20 @@ test('later Saturdays only have the regular mass', () => {
   const day = createDefaultDay(2026, 12, 12);
   assert.equal(day.masses.length, 1);
   assert.equal(day.masses[0].time, '6:00 PM');
+});
+
+test('added later Saturday mass goes left of the existing mass', () => {
+  const day = createDefaultDay(2026, 12, 12);
+  const added = { id: 'added' };
+  const updated = addMassToDay(day, added, { day: 12, weekday: 6 });
+  assert.deepEqual(updated.masses, [added, day.masses[0]]);
+});
+
+test('added first Saturday mass goes left of the default special mass', () => {
+  const day = createDefaultDay(2026, 12, 5);
+  const added = { id: 'added' };
+  const updated = addMassToDay(day, added, { day: 5, weekday: 6 });
+  assert.deepEqual(updated.masses, [added, ...day.masses]);
 });
 
 test('time normalization accepts common input forms', () => {

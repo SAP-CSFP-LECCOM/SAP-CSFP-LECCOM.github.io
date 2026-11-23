@@ -1,8 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { ROSTER } from '../lib/defaults.js';
-import { addRosterNames, normalizeRoster } from '../lib/roster.js';
+import {
+  addRosterNames,
+  cleanName,
+  normalizeMemberGenders,
+  normalizeRoster,
+} from '../lib/roster.js';
 
-export default function RosterDialog({ open, roster, onClose, onSave }) {
+export default function RosterDialog({
+  open,
+  roster,
+  memberGenders,
+  onClose,
+  onSave,
+}) {
   const dialogRef = useRef(null);
   const [draft, setDraft] = useState([]);
   const [newName, setNewName] = useState('');
@@ -11,7 +22,9 @@ export default function RosterDialog({ open, roster, onClose, onSave }) {
 
   useEffect(() => {
     if (open) {
-      setDraft([...roster]);
+      setDraft(
+        roster.map((name) => ({ name, gender: memberGenders[name] ?? '' })),
+      );
       setNewName('');
       setBulk('');
       setFeedback('');
@@ -19,19 +32,33 @@ export default function RosterDialog({ open, roster, onClose, onSave }) {
     } else if (dialogRef.current?.open) {
       dialogRef.current.close();
     }
-  }, [open, roster]);
+  }, [open, roster, memberGenders]);
+
+  const addNames = (text) => {
+    const currentNames = normalizeRoster(draft.map((member) => member.name));
+    const nextNames = addRosterNames(currentNames, text);
+    if (nextNames.length === currentNames.length) return false;
+
+    const existing = new Map(
+      draft.map((member) => [cleanName(member.name).toLowerCase(), member]),
+    );
+    setDraft(
+      nextNames.map(
+        (name) => existing.get(name.toLowerCase()) ?? { name, gender: '' },
+      ),
+    );
+    return true;
+  };
 
   const addOne = () => {
     if (!newName.trim()) {
       setFeedback('Enter a name first.');
       return;
     }
-    const next = addRosterNames(draft, newName);
-    if (next.length === draft.length) {
+    if (!addNames(newName)) {
       setFeedback('That name is already in the roster.');
       return;
     }
-    setDraft(next);
     setNewName('');
     setFeedback('');
   };
@@ -41,18 +68,28 @@ export default function RosterDialog({ open, roster, onClose, onSave }) {
       setFeedback('Paste one name per line first.');
       return;
     }
-    const next = addRosterNames(draft, bulk);
-    if (next.length === draft.length) {
+    if (!addNames(bulk)) {
       setFeedback('Those names are already in the roster.');
       return;
     }
-    setDraft(next);
     setBulk('');
     setFeedback('');
   };
 
   const rename = (index, value) => {
-    setDraft(draft.map((name, current) => (current === index ? value : name)));
+    setDraft(
+      draft.map((member, current) =>
+        current === index ? { ...member, name: value } : member,
+      ),
+    );
+  };
+
+  const setGender = (index, gender) => {
+    setDraft(
+      draft.map((member, current) =>
+        current === index ? { ...member, gender } : member,
+      ),
+    );
   };
 
   const remove = (index) => {
@@ -60,12 +97,20 @@ export default function RosterDialog({ open, roster, onClose, onSave }) {
   };
 
   const reset = () => {
-    setDraft([...ROSTER]);
+    setDraft(ROSTER.map((name) => ({ name, gender: '' })));
     setFeedback('Template roster loaded. Click Save roster to apply.');
   };
 
   const save = () => {
-    onSave(normalizeRoster(draft));
+    const names = normalizeRoster(draft.map((member) => member.name));
+    const genders = {};
+    for (const name of names) {
+      const member = draft.find(
+        (entry) => cleanName(entry.name).toLowerCase() === name.toLowerCase(),
+      );
+      if (member?.gender) genders[name] = member.gender;
+    }
+    onSave(names, normalizeMemberGenders(names, genders));
     dialogRef.current?.close();
   };
 
@@ -82,8 +127,8 @@ export default function RosterDialog({ open, roster, onClose, onSave }) {
       <div className="roster-dialog-inner">
         <div className="roster-dialog-head">
           <div>
-            <h2 id="roster-title">Roster</h2>
-            <p className="roster-count">{draft.length} names</p>
+            <h2 id="roster-title">Members</h2>
+            <p className="roster-count">{draft.length} members</p>
           </div>
           <button type="button" className="icon-button" onClick={() => dialogRef.current?.close()}>
             ×
@@ -121,13 +166,22 @@ export default function RosterDialog({ open, roster, onClose, onSave }) {
         {feedback && <p className="roster-feedback">{feedback}</p>}
 
         <ul className="roster-list">
-          {draft.map((name, index) => (
+          {draft.map(({ name, gender }, index) => (
             <li className="roster-row" key={index}>
               <input
                 value={name}
                 onChange={(event) => rename(index, event.target.value)}
                 aria-label={`Roster name ${index + 1}`}
               />
+              <select
+                value={gender}
+                onChange={(event) => setGender(index, event.target.value)}
+                aria-label={`Gender for ${name || `member ${index + 1}`}`}
+              >
+                <option value="">Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
               <button
                 type="button"
                 className="remove-row"

@@ -21,6 +21,7 @@ test('December 2026 workbook mirrors the template layout', async () => {
   assert.equal(worksheet.pageSetup.orientation, 'landscape');
   assert.equal(worksheet.pageSetup.fitToWidth, 1);
   assert.ok(worksheet.getCell('A1').isMerged);
+  assert.match(worksheet.getCell('A1').value, /DECEMBER 2026 SCHEDULE/);
   assert.equal(worksheet.getCell('A8').value, 'SUNDAY');
   assert.equal(worksheet.getCell('G9').value, 1);
   assert.equal(worksheet.getCell('K9').value, 5);
@@ -53,6 +54,26 @@ test('removed roles stay blank without shifting other week rows', async () => {
   assert.equal(worksheet.getCell('A21').value, '');
   assert.equal(worksheet.getCell('B21').value, 'L2-');
   assert.equal(worksheet.getCell('A22').value, 'PF-');
+});
+
+test('workbook assignment names include member gender honorifics', async () => {
+  const monthData = createDefaultMonth(2026, 12);
+  const firstMass = monthData.days['2026-12-06'].masses[0];
+  firstMass.roles.C = 'JULIAN';
+  firstMass.roles.L1 = 'MAYA';
+
+  const workbook = buildWorkbook(ExcelJS, {
+    year: 2026,
+    month: 12,
+    monthData,
+    memberGenders: { JULIAN: 'male', MAYA: 'female' },
+  });
+  const buffer = await workbook.xlsx.writeBuffer();
+  const reloaded = new ExcelJS.Workbook();
+  await reloaded.xlsx.load(buffer);
+  const worksheet = reloaded.worksheets[0];
+  assert.equal(worksheet.getCell('A18').value, 'C- BRO JULIAN');
+  assert.equal(worksheet.getCell('A19').value, 'L1- SIS MAYA');
 });
 
 test('six-week month builds without errors', async () => {

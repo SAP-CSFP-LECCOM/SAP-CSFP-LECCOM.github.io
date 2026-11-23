@@ -5,22 +5,37 @@ import {
   newId,
 } from '../lib/defaults.js';
 import { formatTime, normalizeTime } from '../lib/calendar.js';
+import { formatMemberName, normalizeMemberName } from '../lib/roster.js';
 
 export default function MassCard({
   mass,
   dayLabel,
+  memberGenders = {},
   rosterId,
   onPatch,
   onRemove,
 }) {
   const patchRoles = (key, value) => {
-    onPatch({ roles: { ...mass.roles, [key]: value } });
+    onPatch({
+      roles: {
+        ...mass.roles,
+        [key]: normalizeMemberName(value, memberGenders),
+      },
+    });
   };
 
   const patchExtra = (id, field, value) => {
     onPatch({
       extraRows: mass.extraRows.map((row) =>
-        row.id === id ? { ...row, [field]: value } : row,
+        row.id === id
+          ? {
+              ...row,
+              [field]:
+                field === 'name'
+                  ? normalizeMemberName(value, memberGenders)
+                  : value,
+            }
+          : row,
       ),
     });
   };
@@ -115,7 +130,7 @@ export default function MassCard({
           <input
             className="role-name"
             list={rosterId}
-            value={mass.roles[key] ?? ''}
+            value={formatMemberName(mass.roles[key] ?? '', memberGenders)}
             onChange={(event) => patchRoles(key, event.target.value)}
             aria-label={`${ROLE_LABELS[key]}, ${dayLabel}, ${timeLabel}`}
           />
@@ -161,7 +176,7 @@ export default function MassCard({
           <input
             className="role-name"
             list={rosterId}
-            value={row.name}
+            value={formatMemberName(row.name, memberGenders)}
             onChange={(event) => patchExtra(row.id, 'name', event.target.value)}
             aria-label={`Extra role name, ${dayLabel}, ${timeLabel}`}
           />
@@ -177,7 +192,7 @@ export default function MassCard({
       ))}
 
       <button type="button" className="tiny add-row screen-only" onClick={addExtraRow}>
-        + Row
+        + Role
       </button>
     </article>
   );

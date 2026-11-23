@@ -1,7 +1,15 @@
 import { makeMass } from '../lib/defaults.js';
+import { addMassToDay } from '../lib/calendar.js';
 import MassCard from './MassCard.jsx';
 
-export default function DayCell({ date, day, dayLabel, onChange, rosterId }) {
+export default function DayCell({
+  date,
+  day,
+  dayLabel,
+  memberGenders,
+  onChange,
+  rosterId,
+}) {
   const isNoMass = day.noMass || day.masses.length === 0;
 
   const patchDay = (updater) => onChange(updater);
@@ -25,19 +33,13 @@ export default function DayCell({ date, day, dayLabel, onChange, rosterId }) {
   };
 
   const addMass = (special = false) => {
-    patchDay((current) => ({
-      ...current,
-      noMass: false,
-      masses: [
-        ...current.masses,
-        makeMass({
-          time: '6:00 AM',
-          language: 'K',
-          special,
-          label: special ? 'Special Mass' : '',
-        }),
-      ],
-    }));
+    const mass = makeMass({
+      time: '6:00 AM',
+      language: 'K',
+      special,
+      label: special ? 'Special Mass' : '',
+    });
+    patchDay((current) => addMassToDay(current, mass, date));
   };
 
   const toggleNoMass = () => {
@@ -120,6 +122,7 @@ export default function DayCell({ date, day, dayLabel, onChange, rosterId }) {
               key={mass.id}
               mass={mass}
               dayLabel={dayLabel}
+              memberGenders={memberGenders}
               rosterId={rosterId}
               onPatch={(patch) => patchMass(mass.id, patch)}
               onRemove={() => removeMass(mass.id)}

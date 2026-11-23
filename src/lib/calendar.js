@@ -98,6 +98,11 @@ export function createDefaultDay(year, month, day) {
   };
 }
 
+export function addMassToDay(day, mass, date) {
+  const masses = date.weekday === 6 ? [mass, ...day.masses] : [...day.masses, mass];
+  return { ...day, noMass: false, masses };
+}
+
 export function createDefaultMonth(year, month) {
   const days = {};
   const total = daysInMonth(year, month);

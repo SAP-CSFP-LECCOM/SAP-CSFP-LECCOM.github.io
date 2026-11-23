@@ -3,7 +3,14 @@ import { DAY_NAMES } from '../lib/defaults.js';
 import { getMonthGrid, monthName, weekdayName } from '../lib/calendar.js';
 import DayCell from './DayCell.jsx';
 
-export default function CalendarTable({ year, month, monthData, onChangeDay, rosterId }) {
+export default function CalendarTable({
+  year,
+  month,
+  monthData,
+  memberGenders,
+  onChangeDay,
+  rosterId,
+}) {
   const weeks = useMemo(() => getMonthGrid(year, month), [year, month]);
 
   return (
@@ -34,6 +41,7 @@ export default function CalendarTable({ year, month, monthData, onChangeDay, ros
                   date={date}
                   day={day}
                   dayLabel={`${weekdayName(date.weekday)}, ${monthName(month)} ${date.day}`}
+                  memberGenders={memberGenders}
                   onChange={(updater) => onChangeDay(date.iso, updater)}
                   rosterId={rosterId}
                 />

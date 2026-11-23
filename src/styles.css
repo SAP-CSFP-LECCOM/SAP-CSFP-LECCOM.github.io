@@ -390,17 +390,17 @@ textarea:focus-visible {
 
 .schedule-header {
   display: grid;
-  grid-template-columns: 78px minmax(0, 1fr) 78px;
+  grid-template-columns: 126px minmax(0, 1fr) 126px;
   align-items: center;
   gap: 2px;
   min-height: 118px;
   padding: 4px 2px;
-  border-right: 1px solid #000;
+  border: 1px solid #000;
 }
 
 .logo {
-  width: 72px;
-  height: 68px;
+  width: 112px;
+  height: 104px;
   object-fit: contain;
 }
 
@@ -464,15 +464,10 @@ textarea:focus-visible {
 .header-month {
   margin-top: 5px;
   font-family: Verdana, sans-serif;
-  font-size: 11px;
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: 0.05em;
-}
-
-.header-year {
-  font-family: Verdana, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 /* Announcement */
@@ -795,6 +790,11 @@ textarea:focus-visible {
   border-left: 0;
 }
 
+.masses-saturday .mass-card:only-child {
+  grid-column: 2;
+  border-left: 1px solid #000;
+}
+
 .masses-weekday .mass-card + .mass-card {
   border-top: 1px solid #000;
 }
@@ -1102,7 +1102,8 @@ textarea:focus-visible {
 
 .roster-add input,
 .roster-bulk textarea,
-.roster-row input {
+.roster-row input,
+.roster-row select {
   flex: 1;
   min-width: 0;
   padding: 0 10px;
@@ -1172,7 +1173,8 @@ textarea:focus-visible {
 }
 
 .roster-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px 36px;
   align-items: center;
   gap: 4px;
 }
@@ -1297,15 +1299,15 @@ textarea:focus-visible {
   }
 
   .schedule-header {
-    grid-template-columns: 66px minmax(0, 1fr) 66px;
+    grid-template-columns: 112px minmax(0, 1fr) 112px;
     min-height: 0;
     padding: 2px;
     gap: 2px;
   }
 
   .logo {
-    width: 60px;
-    height: 56px;
+    width: 104px;
+    height: 96px;
   }
 
   .day-top {
@@ -1318,6 +1320,7 @@ textarea:focus-visible {
 
   .header-month {
     margin-top: 2px;
+    font-size: 18px;
   }
 
   .announcement {
@@ -1363,6 +1366,10 @@ textarea:focus-visible {
 
   .mass-card.mass-special {
     background: var(--peach) !important;
+  }
+
+  .mass-label:placeholder-shown {
+    display: none !important;
   }
 
   .feast-panel {

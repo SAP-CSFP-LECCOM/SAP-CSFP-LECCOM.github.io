@@ -39,8 +39,9 @@ export default function ScheduleHeader({ header, month, year, onChange }) {
           onChange={(event) => onChange('address', event.target.value)}
           aria-label="Parish address"
         />
-        <div className="header-month">{MONTH_NAMES[month - 1]} SCHEDULE</div>
-        <div className="header-year">{year}</div>
+        <div className="header-month">
+          {MONTH_NAMES[month - 1]} {year} SCHEDULE
+        </div>
       </div>
       <img
         className="logo logo-right"

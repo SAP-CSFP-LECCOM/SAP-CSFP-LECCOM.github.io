@@ -75,7 +75,7 @@ export default function Toolbar({
 
       <div className="toolbar-actions">
         <button type="button" onClick={onRoster}>
-          Roster
+          Members
         </button>
         <button type="button" onClick={onExportJson}>
           Export JSON

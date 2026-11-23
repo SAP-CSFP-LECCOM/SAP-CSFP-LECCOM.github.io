@@ -5,6 +5,7 @@ import {
   getMassRoleKeys,
 } from './defaults.js';
 import { formatTime, getMonthGrid } from './calendar.js';
+import { formatMemberName } from './roster.js';
 
 const THIN = { style: 'thin', color: { argb: 'FF000000' } };
 const BORDER = { top: THIN, left: THIN, bottom: THIN, right: THIN };
@@ -12,7 +13,7 @@ const FILL_SPECIAL = 'FFFEEDC6';
 const FILL_NO_MASS = 'FFFFFF00';
 const FILL_REMINDER = 'FFFFF1CC';
 
-const FONT_TITLE = { name: 'Times New Roman', size: 10 };
+const FONT_TITLE = { name: 'Times New Roman', size: 12 };
 const FONT_HEADING = { name: 'Verdana', size: 9, bold: true };
 const FONT_LABEL = { name: 'Verdana', size: 8, bold: true };
 const FONT_BODY = { name: 'Tahoma', size: 8 };
@@ -71,14 +72,15 @@ function mergeCell(worksheet, top, left, bottom, right, value, style = {}) {
   return cell;
 }
 
-function roleValue(key, name) {
-  return name ? `${key}- ${name}` : `${key}-`;
+function roleValue(key, name, memberGenders) {
+  return name ? `${key}- ${formatMemberName(name, memberGenders)}` : `${key}-`;
 }
 
-function extraValue(row) {
+function extraValue(row, memberGenders) {
   if (!row) return '';
-  if (row.label && row.name) return `${row.label}- ${row.name}`;
-  return row.name || row.label || '';
+  const name = formatMemberName(row.name, memberGenders);
+  if (row.label && name) return `${row.label}- ${name}`;
+  return name || row.label || '';
 }
 
 function bytesToBase64(bytes) {
@@ -97,7 +99,10 @@ function logoData(logo) {
   return `data:image/jpeg;base64,${bytesToBase64(bytes)}`;
 }
 
-export function buildWorkbook(ExcelJS, { year, month, monthData, header = {}, logos = {} }) {
+export function buildWorkbook(
+  ExcelJS,
+  { year, month, monthData, header = {}, logos = {}, memberGenders = {} },
+) {
   const workbook = new ExcelJS.Workbook();
   workbook.creator = 'LECCOM Schedule Builder';
   workbook.created = new Date();
@@ -120,8 +125,7 @@ export function buildWorkbook(ExcelJS, { year, month, monthData, header = {}, lo
     header.guild,
     header.parish,
     header.address,
-    `${MONTH_NAMES[month - 1]} SCHEDULE`,
-    String(year),
+    `${MONTH_NAMES[month - 1]} ${year} SCHEDULE`,
   ].filter((line) => line !== undefined && line !== null).join('\n');
 
   mergeCell(worksheet, 1, 1, 7, 7, titleLines, {
@@ -343,11 +347,12 @@ export function buildWorkbook(ExcelJS, { year, month, monthData, header = {}, lo
                 if (roleIndex < weekRoleKeys.length) {
                   const key = weekRoleKeys[roleIndex];
                   if (getMassRoleKeys(mass).includes(key)) {
-                    value = roleValue(key, mass.roles?.[key]);
+                    value = roleValue(key, mass.roles?.[key], memberGenders);
                   }
                 } else {
                   value = extraValue(
                     mass.extraRows?.[roleIndex - weekRoleKeys.length],
+                    memberGenders,
                   );
                 }
               }
@@ -364,11 +369,12 @@ export function buildWorkbook(ExcelJS, { year, month, monthData, header = {}, lo
               if (roleIndex < weekRoleKeys.length) {
                 const key = weekRoleKeys[roleIndex];
                 if (getMassRoleKeys(mass).includes(key)) {
-                  value = roleValue(key, mass.roles?.[key]);
+                  value = roleValue(key, mass.roles?.[key], memberGenders);
                 }
               } else {
                 value = extraValue(
                   mass.extraRows?.[roleIndex - weekRoleKeys.length],
+                  memberGenders,
                 );
               }
             }
@@ -448,10 +454,24 @@ export function buildWorkbook(ExcelJS, { year, month, monthData, header = {}, lo
   return workbook;
 }
 
-export async function downloadXlsx({ year, month, monthData, header, logos }) {
+export async function downloadXlsx({
+  year,
+  month,
+  monthData,
+  header,
+  logos,
+  memberGenders,
+}) {
   const mod = await import('exceljs');
   const ExcelJS = mod.default ?? mod;
-  const workbook = buildWorkbook(ExcelJS, { year, month, monthData, header, logos });
+  const workbook = buildWorkbook(ExcelJS, {
+    year,
+    month,
+    monthData,
+    header,
+    logos,
+    memberGenders,
+  });
   const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer], {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

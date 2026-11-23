@@ -5,7 +5,7 @@ import {
   isoDate,
   monthKey,
 } from './calendar.js';
-import { normalizeRoster } from './roster.js';
+import { normalizeMemberGenders, normalizeRoster } from './roster.js';
 
 export const STORAGE_KEY = 'leccom.schedule.v1';
 export const VERSION = 1;
@@ -127,10 +127,12 @@ export function normalizeRoot(raw) {
 
   const lastKey = monthKey(year, month);
   if (!months[lastKey]) months[lastKey] = createDefaultMonth(year, month);
+  const roster = Array.isArray(raw?.roster) ? normalizeRoster(raw.roster) : [...ROSTER];
 
   return {
     version: VERSION,
-    roster: Array.isArray(raw?.roster) ? normalizeRoster(raw.roster) : [...ROSTER],
+    roster,
+    memberGenders: normalizeMemberGenders(roster, raw?.memberGenders),
     disabledRoster: Array.isArray(raw?.disabledRoster)
       ? [...new Set(raw.disabledRoster.filter((name) => typeof name === 'string').map((name) => name.trim()).filter(Boolean))]
       : [],
