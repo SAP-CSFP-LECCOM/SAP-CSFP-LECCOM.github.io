@@ -832,6 +832,16 @@ textarea:focus-visible {
   border-bottom: 1px solid #000;
 }
 
+.week-has-extra-mass-row .day-no-mass::after {
+  position: absolute;
+  right: 2px;
+  bottom: 1px;
+  left: 2px;
+  border-bottom: 1px solid #000;
+  content: '';
+  pointer-events: none;
+}
+
 .mass-card-no-mass {
   height: 100%;
 }
@@ -1344,7 +1354,7 @@ textarea:focus-visible {
 
 @page {
   size: A4 landscape;
-  margin: 7mm;
+  margin: 0;
 }
 
 @media print {
@@ -1371,7 +1381,7 @@ textarea:focus-visible {
 
   .sheet-wrap {
     display: flex;
-    min-height: calc(210mm - 14mm);
+    min-height: 210mm;
     padding: 0;
     align-items: center;
     justify-content: center;
@@ -1450,6 +1460,11 @@ textarea:focus-visible {
   .day-cell.weekday-0.has-masses::after,
   .day-cell.weekday-6.has-masses::after {
     top: 16px;
+    right: 1px;
+    left: 1px;
+  }
+
+  .week-has-extra-mass-row .day-no-mass::after {
     right: 1px;
     left: 1px;
   }

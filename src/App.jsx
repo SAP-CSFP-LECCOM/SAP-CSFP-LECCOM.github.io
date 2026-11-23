@@ -13,8 +13,8 @@ import { loadPersistedRoot, savePersistedRoot } from './lib/serverStorage.js';
 import { downloadXlsx } from './lib/xlsx.js';
 import { formatMemberName } from './lib/roster.js';
 
-const PAGE_WIDTH_PX = 1069;
-const PAGE_HEIGHT_PX = 741;
+const PAGE_WIDTH_PX = 1122;
+const PAGE_HEIGHT_PX = 794;
 
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);

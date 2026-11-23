@@ -487,9 +487,17 @@ export function buildWorkbook(
     fitToHeight: 1,
     horizontalCentered: true,
     verticalCentered: true,
-    margins: { left: 0.2, right: 0.2, top: 0.2, bottom: 0.2, header: 0, footer: 0 },
+    margins: { left: 0, right: 0, top: 0, bottom: 0, header: 0, footer: 0 },
     printArea: `A1:L${row}`,
   };
+  worksheet.headerFooter.differentFirst = false;
+  worksheet.headerFooter.differentOddEven = false;
+  worksheet.headerFooter.oddHeader = '';
+  worksheet.headerFooter.oddFooter = '';
+  worksheet.headerFooter.evenHeader = '';
+  worksheet.headerFooter.evenFooter = '';
+  worksheet.headerFooter.firstHeader = '';
+  worksheet.headerFooter.firstFooter = '';
 
   return workbook;
 }

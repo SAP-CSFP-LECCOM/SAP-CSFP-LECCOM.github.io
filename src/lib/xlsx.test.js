@@ -18,6 +18,16 @@ test('December 2026 workbook mirrors the template layout', async () => {
   assert.equal(styledWorksheet.getCell('H2').font.size, 9.5);
   assert.equal(styledWorksheet.getCell('H5').font.size, 9.5);
   assert.equal(styledWorksheet.getCell('H7').fill.fgColor.argb, 'FFFEEDC6');
+  for (const key of [
+    'oddHeader',
+    'oddFooter',
+    'evenHeader',
+    'evenFooter',
+    'firstHeader',
+    'firstFooter',
+  ]) {
+    assert.equal(styledWorksheet.headerFooter[key] ?? '', '');
+  }
   const buffer = await workbook.xlsx.writeBuffer();
   const reloaded = new ExcelJS.Workbook();
   await reloaded.xlsx.load(buffer);
@@ -29,6 +39,15 @@ test('December 2026 workbook mirrors the template layout', async () => {
   assert.equal(worksheet.pageSetup.fitToHeight, 1);
   assert.equal(worksheet.pageSetup.horizontalCentered, true);
   assert.equal(worksheet.pageSetup.verticalCentered, true);
+  assert.deepEqual(worksheet.pageSetup.margins, {
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    header: 0,
+    footer: 0,
+  });
+  assert.equal(worksheet.headerFooter, null);
   assert.ok(worksheet.getCell('A1').isMerged);
   const title = worksheet.getCell('A1').value;
   assert.match(title.richText.map((run) => run.text).join(''), /DECEMBER 2026 SCHEDULE/);
